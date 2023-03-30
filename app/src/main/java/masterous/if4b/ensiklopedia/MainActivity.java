@@ -1,5 +1,9 @@
 package masterous.if4b.ensiklopedia;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +11,7 @@ import androidx.loader.app.LoaderManager;
 import androidx.loader.content.Loader;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
@@ -23,12 +28,34 @@ public class MainActivity extends AppCompatActivity {
     private static final int DELETE_LOADER_CODE = 124;
     private ActivityMainBinding binding;
 
+    private ActivityResultLauncher<Intent> intentActivityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
+        @Override
+        public void onActivityResult(ActivityResult result) {
+            if (result.getResultCode() == RESULT_OK) {
+                itemUpdated();
+            }
+        }
+    });
+
+    private void itemUpdated() {
+        Toast.makeText(this, "Item updated successfully!", Toast.LENGTH_SHORT).show();
+        getData();
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
+
+        binding.fabAdd.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MainActivity.this, InputActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     @Override
@@ -110,7 +137,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void gotoUpdateEnsiklopediaActivity(Ensiklopedia ensiklopedia) {
-
+        Intent intent = new Intent(this, InputActivity.class);
+        intent.putExtra("edit", true);
+        intent.putExtra("ensiklopedia", ensiklopedia);
+        intentActivityResultLauncher.launch(intent);
     }
 
     private void showProgressBar() {

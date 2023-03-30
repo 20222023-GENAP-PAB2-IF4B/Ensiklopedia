@@ -35,7 +35,7 @@ public class InputActivity extends AppCompatActivity {
             id = ensiklopedia.getId();
             setDetails(ensiklopedia);
         }
-        
+
         binding.btnAdd.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
